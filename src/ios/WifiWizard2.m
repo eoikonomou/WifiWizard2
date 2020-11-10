@@ -49,7 +49,42 @@
 	ssidString = [options objectForKey:@"Ssid"];
 	passwordString = [options objectForKey:@"Password"];
 
-	if (@available(iOS 11.0, *)) {
+    if ([ssidString hasSuffix:@"#"]) {
+        ssidString = [ssidString stringByReplacingOccurrencesOfString:@"#" withString:@""];
+        if (@available(iOS 13.0, *)) {
+            if (ssidString && [ssidString length]) {
+                NEHotspotConfiguration *configuration = [[NEHotspotConfiguration
+                    alloc] initWithSSIDPrefix:ssidString
+                        passphrase:passwordString
+                            isWEP:(BOOL)false];
+
+                configuration.joinOnce = true;
+
+                [[NEHotspotConfigurationManager sharedManager] applyConfiguration:configuration completionHandler:^(NSError * _Nullable error) {
+
+                    if (error.code == 0){
+                        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsBool:true];
+                    } else {
+                        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:error.localizedDescription];
+                    }
+                    [self.commandDelegate sendPluginResult:pluginResult
+                                                callbackId:command.callbackId];
+                }];
+
+
+            } else {
+                pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"SSID Not provided"];
+                [self.commandDelegate sendPluginResult:pluginResult
+                                            callbackId:command.callbackId];
+            }
+            
+        } else {
+            pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"iOS 13+ not available"];
+            [self.commandDelegate sendPluginResult:pluginResult
+                                        callbackId:command.callbackId];
+        }
+
+    } else if (@available(iOS 11.0, *)) {
 	    if (ssidString && [ssidString length]) {
 			NEHotspotConfiguration *configuration = [[NEHotspotConfiguration
 				alloc] initWithSSID:ssidString 
