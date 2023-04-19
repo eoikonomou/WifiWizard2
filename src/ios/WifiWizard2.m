@@ -195,29 +195,13 @@
                                 callbackId:command.callbackId];
 }
 
-// - (void)getConnectedSSID:(CDVInvokedUrlCommand*)command {
-//     CDVPluginResult *pluginResult = nil;
-//     NSDictionary *r = [self fetchSSIDInfo];
-
-//     NSString *ssid = [r objectForKey:(id)kCNNetworkInfoKeySSID]; //@"SSID"
-
-//     if (ssid && [ssid length]) {
-//         pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:ssid];
-//     } else {
-//         pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Not available"];
-//     }
-
-//     [self.commandDelegate sendPluginResult:pluginResult
-//                                 callbackId:command.callbackId];
-// }
-
 - (void)getConnectedSSID:(CDVInvokedUrlCommand*)command {
     __block NSString *ssid = nil;
     __block CDVPluginResult *pluginResult = nil;
     if (@available(iOS 14.0, *)) {
         [NEHotspotNetwork fetchCurrentWithCompletionHandler:^(NEHotspotNetwork * _Nullable currentNetwork) {
             ssid = [currentNetwork SSID];
-            NSLog(@"debugjeje");
+            NSLog(@"debugging iOS 14 or later");
 
             NSLog(@"%@", currentNetwork);
             if (ssid && [ssid length]) {
@@ -229,15 +213,10 @@
                                         callbackId:command.callbackId];
         }];
     } else {
-        NSArray *ifs = (__bridge_transfer NSArray *)CNCopySupportedInterfaces();
-        NSDictionary *info;
-        for (NSString *ifnam in ifs) {
-            info = (__bridge_transfer NSDictionary *)CNCopyCurrentNetworkInfo((__bridge CFStringRef)ifnam);
-            if (info && [info count]) {
-                ssid = [info objectForKey:@"SSID"];
-                break;
-            }
-        }
+        NSLog(@"debugging iOS 13 and lower");
+        NSDictionary *r = [self fetchSSIDInfo];
+        NSString *ssid = [r objectForKey:(id)kCNNetworkInfoKeySSID]; //@"SSID"
+        NSLog(@"%@", ssid);
         if (ssid && [ssid length]) {
             pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:ssid];
         } else {
