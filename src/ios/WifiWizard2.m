@@ -51,77 +51,48 @@
 	ssidString = [options objectForKey:@"Ssid"];
 	passwordString = [options objectForKey:@"Password"];
 
-    if (@available(iOS 13.0, *)) {
-        if (ssidString && [ssidString length]) {
-            if ([ssidString hasSuffix:@"#"]) {
-                ssidString = [ssidString stringByReplacingOccurrencesOfString:@"#" withString:@""];
-                configuration = [[NEHotspotConfiguration
-                alloc] initWithSSIDPrefix:ssidString
-                    passphrase:passwordString
-                        isWEP:(BOOL)false];
-            } else {
-                configuration = [[NEHotspotConfiguration
-                alloc] initWithSSID:ssidString
-                    passphrase:passwordString
-                        isWEP:(BOOL)false];
-            }
+    if (ssidString && [ssidString length]) {
+        if ([ssidString hasSuffix:@"#"]) {
+            ssidString = [ssidString stringByReplacingOccurrencesOfString:@"#" withString:@""];
+            configuration = [[NEHotspotConfiguration
+            alloc] initWithSSIDPrefix:ssidString
+                passphrase:passwordString
+                    isWEP:(BOOL)false];
+        } else {
+            configuration = [[NEHotspotConfiguration
+            alloc] initWithSSID:ssidString
+                passphrase:passwordString
+                    isWEP:(BOOL)false];
+        }
 
-            configuration.joinOnce = true;
+        configuration.joinOnce = true;
 
-            [[NEHotspotConfigurationManager sharedManager] applyConfiguration:configuration completionHandler:^(NSError * _Nullable error) {
+        [[NEHotspotConfigurationManager sharedManager] applyConfiguration:configuration completionHandler:^(NSError * _Nullable error) {
+            if (@available(iOS 13.0, *)) {
                 if (error.code == 0){
                     pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsBool:true];
                 } else {
                     pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:error.localizedDescription];
                 }
-                [self.commandDelegate sendPluginResult:pluginResult
-                                            callbackId:command.callbackId];
-            }];
-
-
-        } else {
-            pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"SSID Not provided"];
-            [self.commandDelegate sendPluginResult:pluginResult
-                                        callbackId:command.callbackId];
-        }
-        
-    } else if (@available(iOS 11.0, *)) {
-	    if (ssidString && [ssidString length]) {
-			configuration = [[NEHotspotConfiguration
-				alloc] initWithSSID:ssidString 
-					passphrase:passwordString 
-						isWEP:(BOOL)false];
-
-			configuration.joinOnce = false;
-            
-            [[NEHotspotConfigurationManager sharedManager] applyConfiguration:configuration completionHandler:^(NSError * _Nullable error) {
-
+            } else if(@available(iOS 11.0, *)) {
                 NSDictionary *r = [self fetchSSIDInfo];
-                
+            
                 NSString *ssid = [r objectForKey:(id)kCNNetworkInfoKeySSID]; //@"SSID"
                 
                 if ([ssid isEqualToString:ssidString]){
                     pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:ssidString];
-                }else{
+                } else {
                     pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:error.description];
                 }
-                [self.commandDelegate sendPluginResult:pluginResult
-                                            callbackId:command.callbackId];
-            }];
-
-
-		} else {
-			pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"SSID Not provided"];
+            }
             [self.commandDelegate sendPluginResult:pluginResult
                                         callbackId:command.callbackId];
-		}
-	} else {
-		pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"iOS 11+ not available"];
+        }];
+    } else {
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"SSID Not provided"];
         [self.commandDelegate sendPluginResult:pluginResult
                                     callbackId:command.callbackId];
-	}
-
-
+    }
 }
 
 - (void)iOSConnectOpenNetwork:(CDVInvokedUrlCommand*)command {
