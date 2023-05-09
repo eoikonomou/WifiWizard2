@@ -465,18 +465,16 @@ public class WifiWizard2 extends CordovaPlugin {
       }
 
       if(API_VERSION >= 29) {
-        this.networkCallback = new ConnectivityManager.NetworkCallback() {
+        networkCallback = new ConnectivityManager.NetworkCallback() {
           @Override
           public void onAvailable(Network network) {
             connectivityManager.bindProcessToNetwork(network);
-            Log.d(TAG, "WiFi connected");
-            callbackContext.success("onAvailable");
+            callbackContext.error("onAvailable");
           }
 
           @Override
           public void onUnavailable() {
             super.onUnavailable();
-            Log.d(TAG, "WiFi not available");
             callbackContext.error("onUnavailable");
           }
         };
@@ -494,14 +492,11 @@ public class WifiWizard2 extends CordovaPlugin {
 
         NetworkRequest.Builder networkRequestBuilder1 = new NetworkRequest.Builder();
         networkRequestBuilder1.addTransportType(NetworkCapabilities.TRANSPORT_WIFI);
-        //removeCapability added for hotspots without internet
-        networkRequestBuilder1.removeCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET);
         networkRequestBuilder1.setNetworkSpecifier(wifiNetworkSpecifier);
 
         NetworkRequest nr = networkRequestBuilder1.build();
         ConnectivityManager cm = (ConnectivityManager) cordova.getActivity().getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-        //timeout add because "No devices found" wasn't handled correct and doesn't throw Unavailable
-        cm.requestNetwork(nr, this.networkCallback, 60000);
+        cm.requestNetwork(nr, this.networkCallback);
       } else {
         // After processing authentication types, add or update network
         if(wifi.networkId == -1) { // -1 means SSID configuration does not exist yet
@@ -899,7 +894,7 @@ public class WifiWizard2 extends CordovaPlugin {
       try{
           ConnectivityManager cm = (ConnectivityManager) cordova.getActivity().getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
           cm.unregisterNetworkCallback(this.networkCallback);
-          connectivityManager.bindProcessToNetwork(null);
+        connectivityManager.bindProcessToNetwork(null);
           return true;
         }
         catch(Exception e) {
@@ -1266,7 +1261,7 @@ public class WifiWizard2 extends CordovaPlugin {
   private int ssidToNetworkId(String ssid) {
 
     try {
-      
+
       int maybeNetId = Integer.parseInt(ssid);
       Log.d(TAG, "ssidToNetworkId passed SSID is integer, probably a Network ID: " + ssid);
       return maybeNetId;
@@ -1849,7 +1844,7 @@ public class WifiWizard2 extends CordovaPlugin {
       // Marshmallow (API 23+) or newer uses bindProcessToNetwork
       final NetworkRequest request = new NetworkRequest.Builder()
           .addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
-         .removeCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+//          .removeCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
           .build();
 
       networkCallback = new ConnectivityManager.NetworkCallback() {
@@ -1873,7 +1868,7 @@ public class WifiWizard2 extends CordovaPlugin {
       // Lollipop (API 21-22) use setProcessDefaultNetwork (deprecated in API 23 - Marshmallow)
       final NetworkRequest request = new NetworkRequest.Builder()
           .addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
-         .removeCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+//          .removeCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
           .build();
 
       networkCallback = new ConnectivityManager.NetworkCallback() {
