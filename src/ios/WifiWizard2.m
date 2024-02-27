@@ -2,7 +2,7 @@
 #include <ifaddrs.h>
 #import <net/if.h>
 #import <SystemConfiguration/CaptiveNetwork.h>
-#import <NetworkExtension/NetworkExtension.h>  
+#import <NetworkExtension/NetworkExtension.h>
 #import <NetworkExtension/NEHotspotNetwork.h>
 
 @implementation WifiWizard2
@@ -39,7 +39,7 @@
 }
 
 - (void)iOSConnectNetwork:(CDVInvokedUrlCommand*)command {
-    
+
     __block CDVPluginResult *pluginResult = nil;
 
 	NSString * ssidString;
@@ -76,9 +76,9 @@
                 }
             } else if(@available(iOS 11.0, *)) {
                 NSDictionary *r = [self fetchSSIDInfo];
-            
+
                 NSString *ssid = [r objectForKey:(id)kCNNetworkInfoKeySSID]; //@"SSID"
-                
+
                 if ([ssid isEqualToString:ssidString]){
                     pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:ssidString];
                 } else {
@@ -175,6 +175,7 @@
             NSLog(@"Debugging iOS 14 or later");
 
             NSLog(@"SSID:-  %@", ssid);
+            NSLog(@"currentNetwork:-  %@", currentNetwork);
             if (ssid && [ssid length]) {
                 pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:ssid];
             } else {
@@ -200,15 +201,15 @@
 - (void)getConnectedBSSID:(CDVInvokedUrlCommand*)command {
     CDVPluginResult *pluginResult = nil;
     NSDictionary *r = [self fetchSSIDInfo];
-    
+
     NSString *bssid = [r objectForKey:(id)kCNNetworkInfoKeyBSSID]; //@"SSID"
-    
+
     if (bssid && [bssid length]) {
         pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:bssid];
     } else {
         pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Not available"];
     }
-    
+
     [self.commandDelegate sendPluginResult:pluginResult
                                 callbackId:command.callbackId];
 }
@@ -245,54 +246,54 @@
 
 - (void)addNetwork:(CDVInvokedUrlCommand*)command {
     CDVPluginResult *pluginResult = nil;
-    
+
     pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Not supported"];
-    
+
     [self.commandDelegate sendPluginResult:pluginResult
                                 callbackId:command.callbackId];
 }
 
 - (void)removeNetwork:(CDVInvokedUrlCommand*)command {
     CDVPluginResult *pluginResult = nil;
-    
+
     pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Not supported"];
-    
+
     [self.commandDelegate sendPluginResult:pluginResult
                                 callbackId:command.callbackId];
 }
 
 - (void)androidConnectNetwork:(CDVInvokedUrlCommand*)command {
     CDVPluginResult *pluginResult = nil;
-    
+
     pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Not supported"];
-    
+
     [self.commandDelegate sendPluginResult:pluginResult
                                 callbackId:command.callbackId];
 }
 
 - (void)androidDisconnectNetwork:(CDVInvokedUrlCommand*)command {
     CDVPluginResult *pluginResult = nil;
-    
+
     pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Not supported"];
-    
+
     [self.commandDelegate sendPluginResult:pluginResult
                                 callbackId:command.callbackId];
 }
 
 - (void)listNetworks:(CDVInvokedUrlCommand*)command {
     CDVPluginResult *pluginResult = nil;
-    
+
     pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Not supported"];
-    
+
     [self.commandDelegate sendPluginResult:pluginResult
                                 callbackId:command.callbackId];
 }
 
 - (void)getScanResults:(CDVInvokedUrlCommand*)command {
     CDVPluginResult *pluginResult = nil;
-    
+
     pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Not supported"];
-    
+
     [self.commandDelegate sendPluginResult:pluginResult
                                 callbackId:command.callbackId];
 }
@@ -308,45 +309,45 @@
 
 - (void)disconnect:(CDVInvokedUrlCommand*)command {
     CDVPluginResult *pluginResult = nil;
-    
+
     pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Not supported"];
-    
+
     [self.commandDelegate sendPluginResult:pluginResult
                                 callbackId:command.callbackId];
 }
 
 - (void)isConnectedToInternet:(CDVInvokedUrlCommand*)command {
     CDVPluginResult *pluginResult = nil;
-    
+
     pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Not supported"];
-    
+
     [self.commandDelegate sendPluginResult:pluginResult
                                 callbackId:command.callbackId];
 }
 
 - (void)canConnectToInternet:(CDVInvokedUrlCommand*)command {
     CDVPluginResult *pluginResult = nil;
-    
+
     pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Not supported"];
-    
+
     [self.commandDelegate sendPluginResult:pluginResult
                                 callbackId:command.callbackId];
 }
 
 - (void)canPingWifiRouter:(CDVInvokedUrlCommand*)command {
     CDVPluginResult *pluginResult = nil;
-    
+
     pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Not supported"];
-    
+
     [self.commandDelegate sendPluginResult:pluginResult
                                 callbackId:command.callbackId];
 }
 
 - (void)canConnectToRouter:(CDVInvokedUrlCommand*)command {
     CDVPluginResult *pluginResult = nil;
-    
+
     pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Not supported"];
-    
+
     [self.commandDelegate sendPluginResult:pluginResult
                                 callbackId:command.callbackId];
 }
